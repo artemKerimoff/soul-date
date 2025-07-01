@@ -9,30 +9,25 @@ export default function Home() {
   const [users, setUsers] = useState<IUser[]>([]);
   const [likes, setLikes] = useState<number[]>([]);
   const [showLiked, setShowLiked] = useState(false);
+	const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(API_URL)
       .then((response) => response.json())
       .then((data) => {
         setUsers(data);
+				setLoading(false);
       });
     const storedLikes = JSON.parse(localStorage.getItem("likes") || "[]");
     setLikes(storedLikes);
   }, []);
 
-	// useEffect(() => {
-  //   const onStorage = () => {
-  //     const storedLikes = JSON.parse(localStorage.getItem("likes") || "[]");
-  //     setLikes(storedLikes);
-  //   };
-  //   window.addEventListener("storage", onStorage);
-  //   return () => window.removeEventListener("storage", onStorage);
-  // }, []);
-
   const filteredUsers = useMemo(() => {
     if (!showLiked) return users;
     return users.filter((user) => likes.includes(user.id));
   }, [users, likes, showLiked]);
+
+	if (loading) return <div className="text-center text-white">Загрузка пользователей...</div>;
 
   return (
     <div>
